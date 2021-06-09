@@ -24,6 +24,12 @@ public class RecyclerViewAdapter extends RecyclerView.Adapter<RecyclerViewAdapte
     ArrayList<User> userModelArrayList;
     LinearLayout linearLayout;
 
+    public RecyclerViewAdapter(Context mContext, ArrayList<User> userModelArrayList) {
+        this.context = mContext;
+        this.userModelArrayList = userModelArrayList;
+        notifyDataSetChanged();
+    }
+
     public RecyclerViewAdapter(Context mContext, ArrayList<User> userModelArrayList, LinearLayout linearLayout) {
         this.context = mContext;
         this.userModelArrayList = userModelArrayList;

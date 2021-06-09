@@ -1,5 +1,6 @@
 package com.example.retrofit_get_update_add.Fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -12,18 +13,23 @@ import android.widget.Toast;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.example.retrofit_get_update_add.MainActivity;
 import com.example.retrofit_get_update_add.R;
+import com.example.retrofit_get_update_add.adapter.RecyclerViewAdapter;
 import com.example.retrofit_get_update_add.model.User;
 import com.example.retrofit_get_update_add.viewmodel.ViewModel;
 
-public class Fragment_User extends Fragment {
+import java.util.ArrayList;
+import java.util.List;
 
+public class Fragment_User extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private String id, userName, email, password;
     private Button btnADD, btnUpdate;
-
+    ArrayList<User> userModelArrayList = new ArrayList<User>();
+    RecyclerViewAdapter adapter;
     ViewModel viewModel;
     private String mParam1;
     private String mParam2;
@@ -72,6 +78,8 @@ public class Fragment_User extends Fragment {
             public void onClick(View v) {
                 User user = new User(edtID.getText().toString().trim(), edtUserName.getText().toString().trim(), edtEmail.getText().toString().trim(), edtPassword.getText().toString().trim());
                 postUser(view, user);
+                getListUser();
+                backList(view);
             }
         });
         btnUpdate.setOnClickListener(new OnClickListener() {
@@ -79,6 +87,8 @@ public class Fragment_User extends Fragment {
             public void onClick(View v) {
                 User user = new User(edtID.getText().toString().trim(), edtUserName.getText().toString().trim(), edtEmail.getText().toString().trim(), edtPassword.getText().toString().trim());
                 updateUser(view, user);
+                getListUser();
+                backList(view);
             }
         });
         return view;
@@ -92,7 +102,7 @@ public class Fragment_User extends Fragment {
         btnADD = view.findViewById(R.id.btnADD);
         btnUpdate = view.findViewById(R.id.btnUpdate);
         viewModel = ViewModelProviders.of(this).get(ViewModel.class);
-
+        adapter = new RecyclerViewAdapter(view.getContext(), userModelArrayList);
     }
 
     private void postUser(View view, User user) {
@@ -100,6 +110,7 @@ public class Fragment_User extends Fragment {
         viewModel.postUser().observe(this, items -> {
             if (items != null) {
                 Toast.makeText(view.getContext(), "Post Complete", Toast.LENGTH_SHORT).show();
+
             }
         });
     }
@@ -111,5 +122,20 @@ public class Fragment_User extends Fragment {
                 Toast.makeText(view.getContext(), "Update Complete", Toast.LENGTH_SHORT).show();
             }
         });
+    }
+
+    private void getListUser() {
+        viewModel.getUserListLiveData().observe(this, userModel -> {
+            if (userModel != null) {
+                List<User> users = userModel.getItem();
+                userModelArrayList.addAll(users);
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void backList(View view) {
+        Intent intent = new Intent(view.getContext(), MainActivity.class);
+        startActivity(intent);
     }
 }
